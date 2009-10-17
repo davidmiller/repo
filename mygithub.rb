@@ -30,13 +30,8 @@ class Github
       the_post.merge!( post )
     end
 
-    pp the_post
-
     resp = Net::HTTP.post_form( URI.parse( the_uri ), the_post )
     
-    pp resp
-    resp.inspect
-
     return resp.body    
   end
 
@@ -86,6 +81,12 @@ class Github
   def create_local_repo()
     # Creates the local repository
     `git init`
+  end
+
+
+  def set_remote()
+    # Sets the remote repository to push to
+    
   end
 
 
