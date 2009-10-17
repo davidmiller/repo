@@ -98,10 +98,13 @@ options = {}
 OptionParser.new do | opts |
   opts.banner = "Usage: rgithub [options]"
   
-  opts.on( "init", "--init REPO", "Create a repository") do | v |
+  opts.on( "init", "--init REPO", "Create a repository" ) do | v |
     options[:init] = v
   end
 
+  opts.on( "-r", "--remote", "Remote repo only" ) do | r |
+    options[ :remote ] = r
+  end
 end.parse!
 
 pp options
