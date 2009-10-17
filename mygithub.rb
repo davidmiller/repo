@@ -1,5 +1,6 @@
 #!/usr/bin/env ruby
 require 'net/http'
+require 'optparse'
 require 'pp'
 require 'uri'
 require 'rubygems'
@@ -18,12 +19,24 @@ class Github
   end
 
 
-  def access_api( api_command )
+  def access_api( api_command, post = false )
     # Does the business of wiring the data
-    the_uri = @@base_uri + api_command
-    resp = Net::HTTP.post_form( URI.parse( the_uri ),
-                                { 'login' => @login,
-                                  'token' => @token  } )
+    the_uri = @@base_uri + api_command    
+    
+    the_post = { 'login' => @login,
+                 'token' => @token  }
+
+    if post
+      the_post.merge!( post )
+    end
+
+    pp the_post
+
+    resp = Net::HTTP.post_form( URI.parse( the_uri ), the_post )
+    
+    pp resp
+    resp.inspect
+
     return resp.body    
   end
 
@@ -50,8 +63,52 @@ class Github
   end
 
 
+  def create_repo( name )
+    # Create a remote repo
+    create_github_repo( name )
+    create_local_repo()
+  end
+
+
+  def create_github_repo( name )
+    # Creates a repository on Github
+    api_command = 'json/repos/create'
+    homepage = `git config github.homepage`.chomp
+    print 'Description for the github repo: '
+    description = gets.chomp
+    post = { 'name' => name,
+             'description' => description,
+             'homepage' => homepage }
+    access_api( api_command, post )
+  end
+
+
+  def create_local_repo()
+    # Creates the local repository
+    `git init`
+  end
+
+
 end
 
 
+# Set the command line arguments
+options = {}
+OptionParser.new do | opts |
+  opts.banner = "Usage: rgithub [options]"
+  
+  opts.on( "init", "--init REPO", "Create a repository") do | v |
+    options[:init] = v
+  end
+
+end.parse!
+
+pp options
+pp ARGV
+
 github = Github.new()
-github.user_show( 'davidmiller' )
+
+if options[:init]
+  res = github.create_repo( options[:init] )
+  pp res
+end
