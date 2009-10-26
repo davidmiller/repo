@@ -30,6 +30,16 @@ class Repository
   end
 
 
+  def add( file )
+    #Adds file(s) to staging
+    @@vcs_exists.each do | vcs |      
+      commit = IO.popen( vcs + " add '" + file )
+      puts vcs + ':'
+      puts commit.read    
+    end
+  end
+
+
   def commit( msg )
     # Commits the repository(s)
     @@vcs_exists.each do | vcs |      
@@ -137,7 +147,7 @@ class Github
 
   def set_remote( name )
     # Sets the remote repository to push to
-    git_url = "git://github.com/#{@login}/#{name}.git"
+    git_url = "git@github.com:#{@login}/#{name}.git"
     IO.popen( 'git remote add origin ' + git_url )
   end
 
@@ -171,13 +181,21 @@ end.parse!
 #pp options
 #pp ARGV
 
-github = Github.new()
+github = Github.new
 repo = Repository.new
 
-if options[:init]
-  res = github.create_repo( options[:init] )
-#  pp res
+if options[ :init ]
+  res = github.create_repo( options[ :init ] )
+  repo.add( '.' )
+  repo.commit( 'Initial Commit' )
+  repo.push
 end
-if options[:commit]
-  repo.commit( options[:commit] )
+
+if options[ :commit ]
+  repo.commit( options[ :commit ] )
 end
+
+if options[ :push ]
+  repo.push
+end
+
