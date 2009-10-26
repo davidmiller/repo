@@ -31,9 +31,9 @@ class Repository
 
 
   def commit( msg )
-    puts 'hi'
     @@vcs_exists.each do | vcs |      
-      IO.popen( vcs + " commit -a -m '" + msg + "'" )
+      commit = IO.popen( vcs + " commit -a -m '" + msg + "'" )
+      puts commit.read
     end    
   end
 
