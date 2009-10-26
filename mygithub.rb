@@ -34,7 +34,6 @@ class Repository
     puts 'hi'
     @@vcs_exists.each do | vcs |      
       IO.popen( vcs + " commit -a -m '" + msg + "'" )
-#      puts  vcs + " commit -a -m " + msg 
     end    
   end
 
