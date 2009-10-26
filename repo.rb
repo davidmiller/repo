@@ -163,20 +163,19 @@ options = {}
 OptionParser.new do | opts |
   opts.banner = "Usage: rgithub [options]"
   
-  opts.on( "init", "--init REPO", "Create a repository" ) do | v |
-    options[:init] = v
-  end
-
-  opts.on( "-r", "--remote", "Remote repo only" ) do | r |
-    options[ :remote ] = r
+  opts.on( "init", "--init REPO", "Create a repository" ) do | i |
+    github.create_repo( i )
+    repo.add( '.' )
+    repo.commit( 'Initial Commit' )
+    repo.push
   end
 
   opts.on( "commit", "--commit MESSAGE", "Commit the repositories" ) do | c |
-    options[ :commit ] = c
+    repo.commit( c )
   end
   
   opts.on( "push", "--push", "Push local changes to the remote repo" ) do | p |
-    options[ :push ] = p
+    repo.push
   end
   
   opts.on( "add", "--add ADD", "Add file(s) to repo" ) do | a |
@@ -185,21 +184,4 @@ OptionParser.new do | opts |
 
 end.parse!
 
-#pp options
-#pp ARGV
 
-
-if options[ :init ]
-  res = github.create_repo( options[ :init ] )
-  repo.add( '.' )
-  repo.commit( 'Initial Commit' )
-  repo.push
-end
-
-if options[ :commit ]
-  repo.commit( options[ :commit ] )
-end
-
-if options[ :push ]
-  repo.push
-end
