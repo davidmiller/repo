@@ -162,7 +162,7 @@ OptionParser.new do | opts |
     options[ :commit ] = c
   end
   
-  opts.on( "push" "--push", "Push local changes to the remote repo" ) do | p |
+  opts.on( "push", "--push", "Push local changes to the remote repo" ) do | p |
     options[ :push ] = p
   end
 
