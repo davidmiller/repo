@@ -31,6 +31,7 @@ class Repository
 
 
   def commit( msg )
+    # Commits the repository(s)
     @@vcs_exists.each do | vcs |      
       commit = IO.popen( vcs + " commit -a -m '" + msg + "'" )
       puts vcs + ':'
@@ -38,8 +39,22 @@ class Repository
     end    
   end
 
+
+  def push()
+    # Pushes changes to the remote repo
+    @@vcs_exists.each do | vcs |
+      push = IO.popen( vcs + ' push origin master' )
+      puts vcs + ':'
+      puts push.read
+    end
+  end
+
 end
 
+
+class Git
+  # Wrapper class for Git
+end
 
 class Github
   # Main class for dealing with the Github v2 api
@@ -146,8 +161,12 @@ OptionParser.new do | opts |
   opts.on( "commit", "--commit MESSAGE", "Commit the repositories" ) do | c |
     options[ :commit ] = c
   end
+  
+  opts.on( "push" "--push", "Push local changes to the remote repo" ) do | p |
+    options[ :push ] = p
+  end
 
- end.parse!
+end.parse!
 
 #pp options
 #pp ARGV
