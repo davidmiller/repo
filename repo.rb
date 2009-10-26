@@ -33,9 +33,9 @@ class Repository
   def add( file )
     #Adds file(s) to staging
     @@vcs_exists.each do | vcs |      
-      commit = IO.popen( vcs + " add '" + file )
+      add = IO.popen( vcs + " add " + file )
       puts vcs + ':'
-      puts commit.read    
+      puts add.read    
     end
   end
 
@@ -154,6 +154,9 @@ class Github
 
 end
 
+# Initialise the objects
+github = Github.new
+repo = Repository.new
 
 # Set the command line arguments
 options = {}
@@ -175,14 +178,16 @@ OptionParser.new do | opts |
   opts.on( "push", "--push", "Push local changes to the remote repo" ) do | p |
     options[ :push ] = p
   end
+  
+  opts.on( "add", "--add ADD", "Add file(s) to repo" ) do | a |
+    repo.add( a )
+  end
 
 end.parse!
 
 #pp options
 #pp ARGV
 
-github = Github.new
-repo = Repository.new
 
 if options[ :init ]
   res = github.create_repo( options[ :init ] )
@@ -198,4 +203,3 @@ end
 if options[ :push ]
   repo.push
 end
-
