@@ -6,6 +6,41 @@ require 'uri'
 require 'rubygems'
 require 'json'
 
+
+class Repository
+# Generic VCS repository abstraction class
+  
+  @@repo_dirs = { 
+                  '.git' => 'git'
+  }
+
+  @@vcs_exists = Array.new
+
+
+  def initialize
+    # Establishes reops in cwd
+    entries = Dir.new( Dir.getwd ).entries
+    entries.each do | entry |
+      if entry.match( '^[.]' ) and FileTest.directory?( entry )
+        if @@repo_dirs.include?( entry )
+           @@vcs_exists << @@repo_dirs[entry]
+        end
+      end
+    end
+  end
+
+
+  def commit( msg )
+    puts 'hi'
+    @@vcs_exists.each do | vcs |      
+      IO.popen( vcs + " commit -a -m '" + msg + "'" )
+#      puts  vcs + " commit -a -m " + msg 
+    end    
+  end
+
+end
+
+
 class Github
   # Main class for dealing with the Github v2 api
   @@base_uri = 'http://github.com/api/v2/'
@@ -59,9 +94,10 @@ class Github
 
 
   def create_repo( name )
-    # Create a remote repo
+    # Create the repo structure
     create_github_repo( name )
     create_local_repo()
+    set_remote( name )
   end
 
 
@@ -84,9 +120,10 @@ class Github
   end
 
 
-  def set_remote()
+  def set_remote( name )
     # Sets the remote repository to push to
-    
+    git_url = "git://github.com/#{@login}/#{name}.git"
+    IO.popen( 'git remote add origin ' + git_url )
   end
 
 
@@ -105,14 +142,23 @@ OptionParser.new do | opts |
   opts.on( "-r", "--remote", "Remote repo only" ) do | r |
     options[ :remote ] = r
   end
-end.parse!
 
-pp options
-pp ARGV
+  opts.on( "commit", "--commit MESSAGE", "Commit the repositories" ) do | c |
+    options[ :commit ] = c
+  end
+
+ end.parse!
+
+#pp options
+#pp ARGV
 
 github = Github.new()
+repo = Repository.new
 
 if options[:init]
   res = github.create_repo( options[:init] )
-  pp res
+#  pp res
+end
+if options[:commit]
+  repo.commit( options[:commit] )
 end
