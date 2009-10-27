@@ -4,75 +4,74 @@ require 'pp'
 require 'rubygems'
 
 require 'github'
+require 'git'
 
-class Repository
-# Generic VCS repository abstraction class
+module Repo
+
+  class Repo::Repository
+    # Generic VCS repository abstraction class
+    
+    @@repo_dirs = { 
+                   '.git' => 'git'
+                  }
+
+    @@vcs_exists = Array.new
   
-  @@repo_dirs = { 
-                  '.git' => 'git'
-  }
 
-  @@vcs_exists = Array.new
-
-
-  def initialize
-    # Establishes reops in cwd
-    entries = Dir.new( Dir.getwd ).entries
-    entries.each do | entry |
-      if entry.match( '^[.]' ) and FileTest.directory?( entry )
-        if @@repo_dirs.include?( entry )
-           @@vcs_exists << @@repo_dirs[entry]
+    def initialize
+      # Establishes reops in cwd
+      entries = Dir.new( Dir.getwd ).entries
+      entries.each do | entry |
+        if entry.match( '^[.]' ) and FileTest.directory?( entry )
+          if @@repo_dirs.include?( entry )
+            @@vcs_exists << @@repo_dirs[entry]
+          end
         end
       end
     end
-  end
 
 
-  def ignore( pattern )
-    # Adds a pattern to the ignore
-
-  end
-
-
-  def add( file )
-    #Adds file(s) to staging
-    @@vcs_exists.each do | vcs |      
-      add = IO.popen( vcs + " add " + file )
-      puts vcs + ':'
-      puts add.read    
+    def ignore( pattern )
+      # Adds a pattern to the ignore
+      
     end
-  end
 
 
-  def commit( msg )
-    # Commits the repository(s)
-    @@vcs_exists.each do | vcs |      
-      commit = IO.popen( vcs + " commit -a -m '" + msg + "'" )
-      puts vcs + ':'
-      puts commit.read
-    end    
-  end
-
-
-  def push()
-    # Pushes changes to the remote repo
-    @@vcs_exists.each do | vcs |
-      push = IO.popen( vcs + ' push origin master' )
-      puts vcs + ':'
-      puts push.read
+    def add( file )
+      #Adds file(s) to staging
+      @@vcs_exists.each do | vcs |      
+        add = IO.popen( vcs + " add " + file )
+        puts vcs + ':'
+        puts add.read    
+      end
     end
+    
+    
+    def commit( msg )
+      # Commits the repository(s)
+      @@vcs_exists.each do | vcs |      
+        commit = IO.popen( vcs + " commit -a -m '" + msg + "'" )
+        puts vcs + ':'
+        puts commit.read
+      end    
+    end
+    
+
+    def push()
+      # Pushes changes to the remote repo
+      @@vcs_exists.each do | vcs |
+        push = IO.popen( vcs + ' push origin master' )
+        puts vcs + ':'
+        puts push.read
+      end
+    end
+    
   end
 
-end
-
-
-class Git
-  # Wrapper class for Git
 end
 
 
 # Initialise the objects
-
 github = Github::Github.new
 repo = Repository.new
 
