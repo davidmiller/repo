@@ -30,6 +30,12 @@ class Repository
   end
 
 
+  def ignore( pattern )
+    # Adds a pattern to the ignore
+
+  end
+
+
   def add( file )
     #Adds file(s) to staging
     @@vcs_exists.each do | vcs |      
@@ -182,6 +188,8 @@ OptionParser.new do | opts |
     repo.add( a )
   end
 
+  opts.on( "ignore", "--ignore FILE", "Add the ignore pattern to the .ignore" ) do | n |
+    repo.ignore( n )
+  end
+
 end.parse!
-
-
