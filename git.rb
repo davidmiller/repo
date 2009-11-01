@@ -8,7 +8,11 @@ module Git
    
     def initialize
       # Establishes a git environ
+
+      ## This needs to locate the repo itself if false
       @@ignore_file = climbing_file_find( '.gitignore' )
+      ##
+
     end
 
     
@@ -32,9 +36,8 @@ module Git
 
     def init()
       #Initializes a Git repository
-        add = IO.popen( "git init " )
-        puts 'Git:'
-        puts add.read    
+      `git init`
+      `touch .gitignore`
     end
 
 

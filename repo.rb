@@ -2,7 +2,14 @@
 require 'optparse'
 require 'pp'
 require 'rubygems'
-
+if File.ftype(  __FILE__ ) == 'link'
+  __file__ = File.readlink( __FILE__ )
+else
+  __file__ = __FILE__
+end
+#puts File.dirname(__file__)
+$: << File.expand_path( File.dirname( __file__ ) )
+#puts $:
 require 'github'
 require 'git'
 
@@ -90,7 +97,7 @@ ARGV = ARGV.map do | opt |
   end
 end
 
-pp ARGV
+#pp ARGV
 
 # Initialise the objects
 github = Github::Github.new
@@ -100,12 +107,18 @@ repo = Repo::Repository.new
 options = {}
 OptionParser.new do | opts |
   opts.banner = "Usage: rgithub [options]"
-  
+
+ 
   opts.on( "init", "--init REPO", "Create a repository" ) do | i |
     github.create_repo( i )
+    repo init
     repo.add( '.' )
     repo.commit( 'Initial Commit' )
     repo.push
+  end
+
+ opts.on( "ignore", "--ignore FILE", "Add the ignore pattern to the .ignore" ) do | n |
+    repo.ignore( n )
   end
 
   opts.on( "commit", "--commit MESSAGE", "Commit the repositories" ) do | c |
@@ -118,10 +131,6 @@ OptionParser.new do | opts |
   
   opts.on( "add", "--add ADD", "Add file(s) to repo" ) do | a |
     repo.add( a )
-  end
-
-  opts.on( "ignore", "--ignore FILE", "Add the ignore pattern to the .ignore" ) do | n |
-    repo.ignore( n )
   end
 
 end.parse!

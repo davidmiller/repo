@@ -60,7 +60,6 @@ class Github::Github
   def create_repo( name )
     # Create the repo structure
     create_github_repo( name )
-    create_local_repo()
     set_remote( name )
   end
 
@@ -69,18 +68,13 @@ class Github::Github
     # Creates a repository on Github
     api_command = 'json/repos/create'
     homepage = `git config github.homepage`.chomp
-    print 'Description for the github repo: '
-    description = gets.chomp
+    puts 'Description for the github repo: '
+    description = gets()
+
     post = { 'name' => name,
              'description' => description,
              'homepage' => homepage }
     access_api( api_command, post )
-  end
-
-
-  def create_local_repo()
-    # Creates the local repository
-    `git init`
   end
 
 
