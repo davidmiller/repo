@@ -12,7 +12,7 @@ module Repo
     # Generic VCS repository abstraction class
     
     @@repo_dirs = { 
-                   '.git' => 'git'
+                   '.git' => Git::Git
                   }
 
     @@vcs_exists = Array.new
@@ -24,7 +24,7 @@ module Repo
       entries.each do | entry |
         if entry.match( '^[.]' ) and FileTest.directory?( entry )
           if @@repo_dirs.include?( entry )
-            @@vcs_exists << @@repo_dirs[entry]
+            @@vcs_exists << @@repo_dirs[entry].new
           end
         end
       end
@@ -33,7 +33,7 @@ module Repo
 
     def ignore( pattern )
       # Adds a pattern to the ignore
-      
+      puts 'ignoring you'
     end
 
 
@@ -50,9 +50,7 @@ module Repo
     def commit( msg )
       # Commits the repository(s)
       @@vcs_exists.each do | vcs |      
-        commit = IO.popen( vcs + " commit -a -m '" + msg + "'" )
-        puts vcs + ':'
-        puts commit.read
+        vcs.commit( msg )
       end    
     end
     
@@ -60,9 +58,7 @@ module Repo
     def push()
       # Pushes changes to the remote repo
       @@vcs_exists.each do | vcs |
-        push = IO.popen( vcs + ' push origin master' )
-        puts vcs + ':'
-        puts push.read
+        vcs.push
       end
     end
     
@@ -70,10 +66,28 @@ module Repo
 
 end
 
+# Irritating ARGV parsing
+subcommands = [
+               'push',
+               'init',
+               'add',
+               'commit',
+               'ignore'
+              ]
+ARGV = ARGV.map do | opt |
+  if subcommands.include?( opt )
+    "--#{opt}"
+  else
+    opt
+  end
+end
+
+pp ARGV
+
 
 # Initialise the objects
 github = Github::Github.new
-repo = Repository.new
+repo = Repo::Repository.new
 
 # Set the command line arguments
 options = {}
