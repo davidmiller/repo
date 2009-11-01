@@ -31,18 +31,26 @@ module Repo
     end
 
 
+    def init()
+      #Initializes a repository
+      @@vcs_exists.each do | vcs |      
+       vcs.init
+      end
+    end
+
+
     def ignore( pattern )
       # Adds a pattern to the ignore
-      puts 'ignoring you'
+      @@vcs_exists.each do | vcs |      
+       vcs.ignore( pattern )
+      end
     end
 
 
     def add( file )
       #Adds file(s) to staging
       @@vcs_exists.each do | vcs |      
-        add = IO.popen( vcs + " add " + file )
-        puts vcs + ':'
-        puts add.read    
+       vcs.add( file )
       end
     end
     
@@ -83,7 +91,6 @@ ARGV = ARGV.map do | opt |
 end
 
 pp ARGV
-
 
 # Initialise the objects
 github = Github::Github.new

@@ -5,6 +5,52 @@ module Git
   class Git::Git
     # Wrapper class for Git
 
+   
+    def initialize
+      # Establishes a git environ
+      @@ignore_file = climbing_file_find( '.gitignore' )
+    end
+
+    
+    def climbing_file_find( filename )
+      # searches for file climbing dirs
+      cwd = Dir::getwd
+      if Dir::glob( filename )
+        return Dir::glob( filename )[0]
+      else
+        if Dir::getwd == '/'
+          return False
+        else
+          Dir::chdir( '..' )
+          recurse = climbing_file_find( filename )
+          Dir chdir( cwd )
+          return recurse[0]
+        end
+      end
+    end
+
+
+    def init()
+      #Initializes a Git repository
+        add = IO.popen( "git init " )
+        puts 'Git:'
+        puts add.read    
+    end
+
+
+    def add( file )
+      #Adds file(s) to staging
+        add = IO.popen( "git add " + file )
+        puts 'Git:'
+        puts add.read    
+    end
+
+
+    def ignore( pattern )
+      #Adds a pattern to the .gitignore file
+      File.open( @@ignore_file, 'a' ) { | f | f.puts( pattern ) }
+    end
+
 
     def commit( msg )
       # Commits the repository(s)
