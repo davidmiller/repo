@@ -112,7 +112,7 @@ ARGV = ARGV.map do | opt |
   end
 end
 
-pp ARGV
+#pp ARGV
 
 # Initialise the objects
 github = Github::Github.new
@@ -124,8 +124,7 @@ OptionParser.new do | opts |
   opts.banner = "Usage: rgithub [options]"
 
  
-  opts.on( "init", "--init REPO", "Create a repository" ) do | i |
-#    github.create_repo( i )
+  opts.on( "init", "--init", "Create a repository" ) do | i |
     if ARGV.include?( '--ignore' )       
       repo.init( ARGV[ ( ARGV.index( '--ignore') + 1 ) ] )
     else
@@ -145,6 +144,14 @@ OptionParser.new do | opts |
   opts.on( "commit", "--commit MESSAGE", "Commit the repositories" ) do | c |
     repo.commit( c )
   end
+
+  opts.on( "remote", "--remote NAME", "Create a github repo" ) do | r |
+    github.create_repo( r )
+  end
+  
+  opts.on( "description", "--description DESC", "description for the github repo" ) do | d |
+    options.desc = d
+  end  
   
   opts.on( "status", "--status", "Get the status of the repositories" ) do | c |
     repo.status

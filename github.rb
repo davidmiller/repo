@@ -69,7 +69,11 @@ class Github::Github
     api_command = 'json/repos/create'
     homepage = `git config github.homepage`.chomp
     puts 'Description for the github repo: '
-    description = STDIN.gets.chomp
+    if options.desc
+      description = options.desc
+    else
+      description = STDIN.gets.chomp
+    end
     post = { 'name' => name,
              'description' => description,
              'homepage' => homepage }

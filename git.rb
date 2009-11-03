@@ -40,6 +40,8 @@ module Git
       `touch .gitignore`
       if ignore_pattern
         ignore( ignore_pattern )
+        add( '.' )
+        commit( 'initial ignores' )
       end
     end
 
