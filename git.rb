@@ -6,11 +6,11 @@ module Git
     # Wrapper class for Git
 
    
-    def initialize( ignore = false )
+    def initialize( )
       # Establishes a git environ
 
       ## This needs to locate the repo itself if false
-      @@ignore_file = climbing_file_find( '.gitignore' )
+      @@ignore_file = '.gitignore'
       ##
 
     end
@@ -73,6 +73,15 @@ module Git
         puts 'Git:'
         puts push.read
     end
+
+    def status
+        # Gets the status of the git repo
+        status = IO.popen( 'git status' )
+        puts 'Git:'
+        puts status.read
+    end
+
+
   end
 
 

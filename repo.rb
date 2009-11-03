@@ -83,6 +83,13 @@ module Repo
         vcs.push
       end
     end
+
+    def status
+      # Gets the status of the repositories
+      @@vcs_exists.each do | vcs |
+        vcs.status
+      end
+    end
     
   end
 
@@ -94,7 +101,8 @@ subcommands = [
                'init',
                'add',
                'commit',
-               'ignore'
+               'ignore',
+               'status'
               ]
 ARGV = ARGV.map do | opt |
   if subcommands.include?( opt )
@@ -130,13 +138,16 @@ OptionParser.new do | opts |
 
  opts.on( "ignore", "--ignore FILE", "Add the ignore pattern to the .ignore" ) do | n |
     if not ARGV.include?( '--init' )
-      puts 'initing'
-      #repo.ignore( n )
+      repo.ignore( n )
     end
   end
 
   opts.on( "commit", "--commit MESSAGE", "Commit the repositories" ) do | c |
     repo.commit( c )
+  end
+  
+  opts.on( "status", "--status", "Get the status of the repositories" ) do | c |
+    repo.status
   end
   
   opts.on( "push", "--push", "Push local changes to the remote repo" ) do | p |
