@@ -51,7 +51,9 @@ module Git
 
     def ignore( pattern )
       #Adds a pattern to the .gitignore file
-      File.open( @@ignore_file, 'a' ) { | f | f.puts( pattern ) }
+      if open( @@ignore_file ).grep( Regexp.compile( pattern ) ).size == 0
+        File.open( @@ignore_file, 'a' ) { | f | f.puts( pattern ) }
+      end
     end
 
 
