@@ -22,6 +22,11 @@ module Repo
                    '.git' => Git::Git
                   }
 
+    @@vcs_supported = [
+                        Git::Git
+                      ]
+    
+    
     @@vcs_exists = Array.new
   
 
@@ -38,10 +43,12 @@ module Repo
     end
 
 
-    def init()
+    def init( ignore = false )
       #Initializes a repository
-      @@vcs_exists.each do | vcs |      
-       vcs.init
+      @@vcs_supported.each do | vcs |      
+        vcs_instance = vcs.new
+ #       pp vcs_instance
+        vcs_instance.init( ignore )
       end
     end
 
@@ -97,7 +104,7 @@ ARGV = ARGV.map do | opt |
   end
 end
 
-#pp ARGV
+pp ARGV
 
 # Initialise the objects
 github = Github::Github.new
@@ -110,15 +117,22 @@ OptionParser.new do | opts |
 
  
   opts.on( "init", "--init REPO", "Create a repository" ) do | i |
-    github.create_repo( i )
-    repo init
+#    github.create_repo( i )
+    if ARGV.include?( '--ignore' )       
+      repo.init( ARGV[ ( ARGV.index( '--ignore') + 1 ) ] )
+    else
+      repo.init
+    end
     repo.add( '.' )
     repo.commit( 'Initial Commit' )
     repo.push
   end
 
  opts.on( "ignore", "--ignore FILE", "Add the ignore pattern to the .ignore" ) do | n |
-    repo.ignore( n )
+    if not ARGV.include?( '--init' )
+      puts 'initing'
+      #repo.ignore( n )
+    end
   end
 
   opts.on( "commit", "--commit MESSAGE", "Commit the repositories" ) do | c |

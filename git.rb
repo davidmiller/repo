@@ -6,7 +6,7 @@ module Git
     # Wrapper class for Git
 
    
-    def initialize
+    def initialize( ignore = false )
       # Establishes a git environ
 
       ## This needs to locate the repo itself if false
@@ -34,10 +34,13 @@ module Git
     end
 
 
-    def init()
-      #Initializes a Git repository
+    def init( ignore_pattern = false )
+      #Initializes a Git repository      
       `git init`
       `touch .gitignore`
+      if ignore_pattern
+        ignore( ignore_pattern )
+      end
     end
 
 
